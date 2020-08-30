@@ -1,12 +1,15 @@
 const axios = require("axios");
+const qs = require("querystring");
 
 const BASE_URL = process.env.KITE_API_BASE_URL;
 
-const getConfig = async () => {
+const getConfig = async (url) => {
+  const contentType =
+    url === "/session/token" ? "x-www-form-urlencoded" : "json";
   const config = {
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json",
+      "Content-Type": `application/${contentType}`,
     },
   };
   return {
@@ -22,12 +25,10 @@ exports.webApiGet = (url) => {
 };
 
 exports.webApiPost = (url, options) => {
-  const config = getConfig();
+  const config = getConfig(url);
+  const stringifyOptions =
+    url === "/session/token" ? qs.stringify(options) : JSON.stringify(options);
   return {
-    request: axios.post(
-      `${BASE_URL}${url}`,
-      JSON.stringify(options),
-      config.config
-    ),
+    request: axios.post(`${BASE_URL}${url}`, stringifyOptions, config.config),
   };
 };
