@@ -9,7 +9,10 @@ exports.getAccessToken = async (req, res) => {
   try {
     const value = await getAccessTokenSchema.validateAsync(req.query);
     const response = await userService.getAccessToken(value.requestToken);
-    if (!isEmpty(response.data)) {
+    if (!isEmpty(response.data) && response.data.status === "success") {
+      const {
+        data: { access_token },
+      } = response.data;
       res.sendSuccess(HTTP_CODE.SUCCESS, { access_token });
     } else {
       res.sendError(
