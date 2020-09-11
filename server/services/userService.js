@@ -15,7 +15,6 @@ exports.getAccessToken = async (requestToken) => {
     }).request;
     return response;
   } catch (error) {
-    logger.error(error);
     throw error;
   }
 };

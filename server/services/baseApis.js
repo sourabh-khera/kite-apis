@@ -29,7 +29,7 @@ exports.webApiGet = (url, accessToken) => {
   };
 };
 
-exports.webApiPost = (url, options, accessToken) => {
+exports.webApiPost = (url, options, accessToken = "") => {
   const config = getConfig(url, accessToken);
   const stringifyOptions =
     url === "/session/token" ? qs.stringify(options) : JSON.stringify(options);
