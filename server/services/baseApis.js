@@ -22,7 +22,7 @@ const getConfig = (url, accessToken) => {
   };
 };
 
-exports.webApiGet = (url, accessToken) => {
+exports.webApiGet = (url, accessToken = "") => {
   const config = getConfig(url, accessToken);
   return {
     request: axios.get(`${BASE_URL}${url}`, config.config),
