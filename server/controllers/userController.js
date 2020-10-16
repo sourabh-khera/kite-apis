@@ -17,6 +17,7 @@ exports.getAccessToken = async (req, res) => {
       const { data } = response.data;
       const userClaim = {
         email: data.email,
+        user_id: data.user_id,
       };
       const app_token = signToken(userClaim);
       await addNewUser(data);
