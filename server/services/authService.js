@@ -1,14 +1,14 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
-const { HTTP_CODE, MESSAGES } = require('../constants');
-const { sendAndLogError } = require('../utils');
-const { tokenExpiryTime } = require('../configurations');
+const { HTTP_CODE, MESSAGES } = require("../constants");
+const { sendAndLogError } = require("../utils");
+const { tokenExpiryTime } = require("../configurations");
 
 /**
-* @param {object} req object
-* @param {res} res object
-* @param {next} next function of this middleware
-*/
+ * @param {object} req object
+ * @param {res} res object
+ * @param {next} next function of this middleware
+ */
 
 exports.isAuthenticated = (req, res, next) => {
   try {
@@ -17,22 +17,27 @@ exports.isAuthenticated = (req, res, next) => {
       return res.sendError(HTTP_CODE.UNAUTHORIZED, MESSAGES.api.AUTH_ERROR);
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    jwt.verify(token.split(":")[0], process.env.JWT_SECRET, (err, decoded) => {
       if (err) {
-        return res.sendError(HTTP_CODE.VALIDATION_ERROR, MESSAGES.api.AUTH_ERROR);
+        return res.sendError(
+          HTTP_CODE.VALIDATION_ERROR,
+          MESSAGES.api.AUTH_ERROR
+        );
       }
       // if everything good, save to request for use in other routes
-      const data = jwt.decode(token);
+      const data = jwt.decode(token.split(":")[0]);
       req.user = data;
+      req.accessToken = token.split(":")[1];
       next();
-    })
+    });
+  } catch (error) {
+    sendAndLogError(res, error);
   }
-  catch (error) { sendAndLogError(res, error) }
-}
+};
 
 /**
  * Returns a jwt token signed by the app secret
  * @param {string} id user's unique id
  */
-exports.signToken = userClaim => jwt.sign(userClaim, process.env.JWT_SECRET, { expiresIn: tokenExpiryTime });
-
+exports.signToken = (userClaim) =>
+  jwt.sign(userClaim, process.env.JWT_SECRET, { expiresIn: tokenExpiryTime });
